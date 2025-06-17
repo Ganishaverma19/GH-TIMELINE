@@ -1,11 +1,12 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+ 
+require_once __DIR__ . '/PHPMailer-master/PHPMailer-master/src/Exception.php';
+require_once __DIR__ . '/PHPMailer-master/PHPMailer-master/src/PHPMailer.php';
+require_once __DIR__ . '/PHPMailer-master/PHPMailer-master/src/SMTP.php';
 
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
-
+// ...existing code...
 function generateVerificationCode() {
     return str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
 }
