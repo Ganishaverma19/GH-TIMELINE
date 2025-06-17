@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
 // Fetch GitHub commits and store them in a text file
 $username = 'Ganishaverma19';
 $repo = 'GH-TIMELINE';
@@ -8,7 +11,7 @@ $apiUrl = "https://api.github.com/repos/$username/$repo/commits";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_USERAGENT, $username); // Required by GitHub API
+curl_setopt($ch, CURLOPT_USERAGENT, 'GH-TIMELINE-App'); // Proper User-Agent
 
 $response = curl_exec($ch);
 curl_close($ch);
@@ -16,7 +19,7 @@ curl_close($ch);
 // Decode response
 $commits = json_decode($response, true);
 
-if (!$commits || isset($commits['message'])) {
+if (!$commits || !is_array($commits)) {
     echo "Failed to fetch commits or API limit reached.";
     exit;
 }
