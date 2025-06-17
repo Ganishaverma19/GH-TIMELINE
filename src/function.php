@@ -1,4 +1,10 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
 
 function generateVerificationCode() {
     return str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
@@ -30,20 +36,14 @@ function unsubscribeEmail($email) {
 
 function sendVerificationEmail($email, $code) {
     $subject = "Your Verification Code";
-    $message = "<p>Your verification code is: <strong>$code</strong></p>";
-    $headers  = "MIME-Version: 1.0\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-    $headers .= "From: no-reply@example.com\r\n";
-    mail($email, $subject, $message, $headers);
+    $body = "<p>Your verification code is: <strong>$code</strong></p>";
+    sendEmail($email, $subject, $body);
 }
 
 function sendUnsubscribeEmail($email, $code) {
     $subject = "Confirm Unsubscription";
-    $message = "<p>To confirm unsubscription, use this code: <strong>$code</strong></p>";
-    $headers  = "MIME-Version: 1.0\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-    $headers .= "From: no-reply@example.com\r\n";
-    mail($email, $subject, $message, $headers);
+    $body = "<p>To confirm unsubscription, use this code: <strong>$code</strong></p>";
+    sendEmail($email, $subject, $body);
 }
 
 function fetchGitHubTimeline() {
@@ -77,16 +77,35 @@ function sendGitHubUpdatesToSubscribers() {
 
     foreach ($emails as $email) {
         $unsubscribeLink = "http://localhost/GH-TIMELINE/src/unsubscribe.php?email=" . urlencode($email);
-        $message = $html . "<p><a href='$unsubscribeLink' id='unsubscribe-button'>Unsubscribe</a></p>";
+        $message = $html . "<p><a href='$unsubscribeLink'>Unsubscribe</a></p>";
         sendEmail($email, "Latest GitHub Updates", $message);
     }
 }
 
 function sendEmail($to, $subject, $message) {
-    $headers  = "MIME-Version: 1.0\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-    $headers .= "From: no-reply@example.com\r\n";
-    mail($to, $subject, $message, $headers);
-}
+    $mail = new PHPMailer(true);
+    try {
+        // SMTP Configuration
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'ganishaverma2004@gmail.com';          
+        $mail->Password   = 'ajaj bwlk dvwo gnma';            
+        $mail->SMTPSecure = 'tls';
+        $mail->Port       = 587;
 
+        // Sender and recipient
+        $mail->setFrom('ganishaverma2004@gmail.com', 'GitHub Timeline');  
+        $mail->addAddress($to);
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $message;
+
+        $mail->send();
+    } catch (Exception $e) {
+        echo "Email Error ({$to}): {$mail->ErrorInfo}";
+    }
+}
 ?>
