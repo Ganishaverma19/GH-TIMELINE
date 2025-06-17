@@ -1,5 +1,5 @@
 <?php
-include "functions.php";
+include "function.php";
 
 // Read registered emails
 $emails = getRegisteredEmails();
